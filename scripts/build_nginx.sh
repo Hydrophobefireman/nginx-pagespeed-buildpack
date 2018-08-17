@@ -9,11 +9,14 @@
 # Once the dyno is 'up' you can open your browser and navigate
 # this dyno's directory structure to download the nginx binary.
 
-NGINX_VERSION=${NGINX_VERSION-1.14.0}
-NPS_VERSION=${NPS_VERSION-1.13.35.2}
-
+NGINX_VERSION=${NGINX_VERSION-1.15.2}
+PCRE_VERSION=${PCRE_VERSION-8.37}
+HEADERS_MORE_VERSION=${HEADERS_MORE_VERSION-0.261}
+NPS_VERSION=1.13.35.2
 nginx_tarball_url=http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz
-nps_url=https://github.com/apache/incubator-pagespeed-ngx/archive/v${NPS_VERSION}-beta.tar.gz
+pcre_tarball_url=http://iweb.dl.sourceforge.net/project/pcre/pcre/${PCRE_VERSION}/pcre-${PCRE_VERSION}.tar.bz2
+headers_more_nginx_module_url=https://github.com/openresty/headers-more-nginx-module/archive/v${HEADERS_MORE_VERSION}.tar.gz
+nps_url=https://github.com/apache/incubator-pagespeed-ngx/archive/v${NPS_VERSION}-beta.zip
 
 temp_dir=$(mktemp -d /tmp/nginx.XXXXXXXXXX)
 
@@ -42,6 +45,8 @@ echo "Downloading $nps_url"
   cd nginx-${NGINX_VERSION}
   ./configure \
     --prefix=/tmp/nginx \
+    --with-pcre=pcre-${PCRE_VERSION} \
+    --add-module=/${temp_dir}/nginx-${NGINX_VERSION}/headers-more-nginx-module-${HEADERS_MORE_VERSION}\
     --add-module=${temp_dir}/nginx-${NGINX_VERSION}/incubator-pagespeed-ngx-${NPS_VERSION}-beta \
     --with-http_gzip_static_module \
     --with-cc-opt='-g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2' \
@@ -49,9 +54,3 @@ echo "Downloading $nps_url"
 
   make install
 )
-
-while true
-do
-  sleep 60
-  echo "."
-done
