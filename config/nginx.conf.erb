@@ -16,7 +16,7 @@ http {
 	gzip_vary on;
 	gzip_proxied any;
 	gzip_types text/plain text/css application/json application/javascript application/x-javascript text/javascript text/xml application/xml application/rss+xml application/atom+xml application/rdf+xml;
-	log_format l2met 'USER_AGENT=$http_user_agent X-Forwarded-For=$http_x_forwarded_for';
+	log_format l2met 'USER_AGENT=$http_user_agent X-Forwarded-For=$http_x_forwarded_for Scheme:$scheme';
 	access_log logs/nginx/access.log l2met;
 	error_log logs/nginx/error.log;
 	include mime.types;
@@ -40,14 +40,14 @@ http {
 		add_header	X-Frame-Options "SAMEORIGIN";
 		pagespeed 	on;
 		pagespeed 	FileCachePath "/tmp/pagespeed/";
-		pagespeed 	XHeaderValue "pagespeed";
+		pagespeed 	XHeaderValue "Speedy";
 		pagespeed 	PreserveUrlRelativity on;
 		pagespeed 	LowercaseHtmlNames on;
 		pagespeed 	ModifyCachingHeaders off;
-		pagespeed 	Statistics off;
 		pagespeed 	AvoidRenamingIntrospectiveJavascript off;
 		pagespeed 	MaxCacheableContentLength -1;
-	
+		pagespeed FetchHttps enable;
+		pagespeed RespectXForwardedProto on;
 	# pagespeed javascript experiment
 		pagespeed 	UseExperimentalJsMinifier on;
 	
@@ -55,33 +55,16 @@ http {
 		pagespeed	RewriteLevel CoreFilters;
 	
 	# pagespeed filters
-		pagespeed 	EnableFilters collapse_whitespace;			# html
-		pagespeed	EnableFilters remove_comments;				# html
-		pagespeed 	EnableFilters remove_quotes;				# html
-		pagespeed	EnableFilters rewrite_images;				# images
-		pagespeed	EnableFilters convert_png_to_jpeg;			# images
-		pagespeed	EnableFilters convert_jpeg_to_webp;			# images
-		pagespeed 	EnableFilters lazyload_images;				# images
-		pagespeed	EnableFilters defer_javascript;				# javascript
-		pagespeed	EnableFilters rewrite_javascript;			# javascript
-		pagespeed 	EnableFilters inline_css;					# css
-		#pagespeed	EnableFilters combine_css;					# css
-		pagespeed	EnableFilters prioritize_critical_css;		# css
-		pagespeed	EnableFilters rewrite_css;					# css
-		#pagespeed 	EnableFilters fallback_rewrite_css_urls;	# css fallback
-		pagespeed	EnableFilters inline_google_font_css;		# google fonts
-		pagespeed 	EnableFilters insert_dns_prefetch;			# dns
-		pagespeed 	EnableFilters extend_cache;					# caching
+		pagespeed EnableFilters responsive_images;
+		pagespeed EnableFilters outline_javascript;
+		pagespeed EnableFilters rewrite_css,rewrite_javascript,rewrite_javascript_inline;
+		pagespeed EnableFilters combine_javascript,inline_css,inline_google_font_css,inline_javascript,local_storage_cache;
+		pagespeed EnableFilters collapse_whitespace,extend_cache,remove_quotes,convert_meta_tags,insert_dns_prefetch;
+		pagespeed EnableFilters hint_preload_subresources;
 
-		# Ensure requests for pagespeed optimized resources go to the pagespeed handler
-		# and no extraneous headers get set.
 		# pagespeed handlers
-		location ~ "^/pagespeed_static/" { 
 
-		}
-		location ~ "^/ngx_pagespeed_beacon$" { 
-			
-		}
+		
 		location / {
 			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 			proxy_set_header Host $http_host;
@@ -91,7 +74,7 @@ http {
 		location /static/ {
 			alias /app/static/;
 			try_files $uri =404;
-		}	
+		}
 	}
 }
 
