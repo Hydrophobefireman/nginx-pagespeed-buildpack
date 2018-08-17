@@ -54,3 +54,9 @@ echo "Downloading $nps_url"
 
   make install
 )
+
+while true
+do
+  sleep 60
+  echo "."
+done
