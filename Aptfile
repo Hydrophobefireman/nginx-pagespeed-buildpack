@@ -17,6 +17,7 @@ libmpc3
 libgmp3-dev
 libgmp10
 libgmp-dev
+libmpc
 libmpc-dev
 flex
 bison
