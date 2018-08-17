@@ -46,16 +46,15 @@ psol_url=https://dl.google.com/dl/page-speed/psol/${NPS_RELEASE_NUMBER}-x64.tar.
   wget ${psol_url}
   tar -xzvf $(basename ${psol_url})
 )
-PS_NGX_EXTRA_FLAGS="--with-cc=/usr/lib/gcc  --with-ld-opt=-static-libstdc++" 
 export cc=gcc
 export CC=gcc
 (	
-  cd nginx-${NGINX_VERSION}
+cd nginx-${NGINX_VERSION}
 ./configure \
 --with-pcre=pcre-${PCRE_VERSION} \
 --prefix=/tmp/nginx \
---with-cc=/usr/lib/gcc \
---with-ld-opt=-static-libstdc++
+--with-cc=gcc \
+--with-ld-opt=-static-libstdc++\
 --add-module=/${temp_dir}/nginx-${NGINX_VERSION}/headers-more-nginx-module-${HEADERS_MORE_VERSION}\
 --add-module=${temp_dir}/nginx-${NGINX_VERSION}/incubator-pagespeed-ngx-${NPS_VERSION}-beta\
 --with-http_gzip_static_module \
