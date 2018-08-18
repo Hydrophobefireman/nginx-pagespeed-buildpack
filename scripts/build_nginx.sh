@@ -62,3 +62,4 @@ cd nginx-${NGINX_VERSION}
 --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,--as-needed'
 make install
 )
+cp /tmp/nginx/sbin/nginx $1
